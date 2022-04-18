@@ -2,7 +2,7 @@
 {-# HLINT ignore "Use foldr" #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 module Lib
-    ( someFunc
+    ( prefixes
     ) where
 import Data.Bits (Bits(xor))
 
@@ -131,5 +131,97 @@ isAscCorr [x] = True
 isAscCorr (x:y:xs)
     = (x <= y) && isAscCorr(y:xs)
 
+-- 4 -- path x to y exists in the graph
+hasPath :: [(Int, Int)] -> Int -> Int -> Bool
+hasPath [] a b = False
+hasPath [x] a b = False
 
 
+------ HIGHER ORDER FUNCTIONS -------
+app :: (a -> b) -> a -> b
+app f x = f x
+
+add1 :: Int -> Int
+add1 x = x + 1
+
+--- anonnymous fc ---
+anonnymousFc = (\x y z -> x + y + z)
+
+-- MAP --
+mappedList = map (\x -> x + 5) [1,2,3] -- -> [6,7,8]
+mappedList2 = map (\(x,y) -> x+y) [(1,1),(2,2),(3,3)] -- -> [2,4,6]
+
+-- FILTER --
+filteredList = filter (\x -> even x) [1,2,3,4] -- -> [1,3]
+filteredList2 = filter (\(x,y) -> x < y) [(1,3),(3,5), (9,3), (5,1)] -- -> [(9,3), (5,1)]
+
+----- PARTIAL FUNCTIONS APPLICATION AND CURRYING ------
+--curr1 :: a -> b -> c -> d
+--curr2 :: a -> (b -> (c -> d)) -- (....) is a function
+
+-- examples --
+--add'' :: Int -> Int -> Int
+--add'' x y = x + y
+--add'' x = (\y -> x + y)
+--add'' = (\x -> (\y -> x + y))
+
+-- returns : (\y -> 1 + y)
+
+---- FUNCTION COMPOSITION ----
+-- f . g  équivalent to (\x -> f (g x))
+
+--descSort = reverse . sort
+--descSort2 = (\x -> reverse (sort x))
+--descSort3 x = reverse (sort x) -- all eq --
+
+-- map --
+map2D :: (a -> b) -> [[a]] -> [[b]]
+map2D = map . map
+
+--- $ Sign ---
+
+signFc xs = map (\x -> x +1) (filter (\x -> x > 1) xs)
+signFc xs = map (\x -> x +1) $ filter (\x -> x > 1) xs
+
+------- FOLDING --------
+sum' xs = foldl (\acc x -> acc + x) 0 xs
+
+max' :: [a] -> a
+max' = foldr1 (\x acc -> if (x > acc) then x else acc)
+
+reverse' :: [a] -> [a]
+reverse' = foldl (\acc x -> x : acc ) []
+
+product' :: [a] -> a
+product' = foldr1 (*)
+
+filter' :: [a] -> [a]
+filter' = foldr (\x acc -> if (even x) then x : acc else acc) []
+
+filter2' :: (a -> Bool) -> [a] -> [a]
+filter2' p = foldr (\x acc -> if p x then x : acc else acc) []
+
+head' :: [a] -> a
+head' = foldr1 (\x _ -> x) -------------- _ and order --------------
+
+last' :: [a] -> a
+last' = foldl1 (\_ x -> x)
+
+----- ex ------
+-- 1 -- all prefixes of a given list
+prefixes :: [a] -> [[a]]
+prefixes = foldl (\x acc -> [x] : (map ((:)x) acc)) []
+
+-- 2 -- lagrange
+
+lagrange :: [(Float, Float)] -> Float -> Float
+lagrange xs x =
+    foldl (\(xj,yj) acc -> 
+        acc + yj*(auxlagrange xs x xj)) 0 xs
+
+
+auxlagrange :: [(Float, Float)] -> Float -> Float -> Float
+auxlagrange xs x xj =
+    foldl (\(xm, ym) acc -> 
+        if (xj /= xm) then acc * (x-xm)/(xj-xm)
+        else acc) 1 xs

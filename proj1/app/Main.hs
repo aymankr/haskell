@@ -1,6 +1,6 @@
 module Main where
 
-import Lib
+import Lib2
 
 main :: IO ()
-main = someFunc
+main = prefixes [1,2,3]
