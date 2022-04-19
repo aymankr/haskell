@@ -207,8 +207,28 @@ head' = foldr1 (\x _ -> x) -------------- _ and order --------------
 last' :: [a] -> a
 last' = foldl1 (\_ x -> x)
 
+-- datatypes --
+-- data name = Constructor1 <args> | Constructor2 <args>...
+
+
+data Color = 
+    Red | Green | Blue
+
+data Calculation = 
+    Add Int Int | Sub Int Int | Mul Int Int | Div Int Int 
+calc :: Calculation -> Int
+calc (Add x y) = x+y
+calc (Sub x y) = x-y
+calc (Mul x y) = x*y
+calc (Div x y) = div x y
+
+data Tree a = Leaf | Node (Tree a) a (Tree a)
+tree :: Tree Int
+tree =  Node (Node Leaf 1 Leaf) 2 (Node (Node Leaf 3 Leaf) 4 Leaf)
+
 ----- ex ------
 -- 1 -- all prefixes of a given list
+
 prefixes :: [a] -> [[a]]
 prefixes = foldl (\x acc -> [x] : (map ((:)x) acc)) []
 
@@ -225,3 +245,9 @@ auxlagrange xs x xj =
     foldl (\(xm, ym) acc -> 
         if (xj /= xm) then acc * (x-xm)/(xj-xm)
         else acc) 1 xs
+
+-- 4 -- fold elements of a trie in a preorder traversel
+
+data Trie a = Leaf a | Node a [Trie a]
+foldtrie :: (b -> a -> b) -> b -> Trie a -> b
+foldtrie 
