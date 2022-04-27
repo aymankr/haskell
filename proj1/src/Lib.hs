@@ -250,4 +250,36 @@ auxlagrange xs x xj =
 
 data Trie a = Leaf a | Node a [Trie a]
 foldtrie :: (b -> a -> b) -> b -> Trie a -> b
-foldtrie 
+foldtrie f acc (Leaf x) = f acc x
+foldtrie f acc (Node x xs) = foldl f' (f acc x) xs
+    where f' acc t = foldtrie f acc t
+
+-- RECORDS -- data (classes)
+
+data Person = Person { name :: String, age :: Int }
+
+name :: Person -> String
+age :: Person -> Int
+
+greet :: Person -> [Char]
+greet person = "Hi " ++ name person
+
+greet (Person name _) = "Hi " ++ name
+greet (Person n _) = "Hi " ++ n
+
+data Point =
+    D2 { x :: Int, y :: Int }
+    | D3 { x :: Int, y :: Int, z :: Int }
+
+data Shape = Circle Float Float Float
+            | Rectangle Float Float Float Float deriving (Show)
+-- show -> magically haskell give back a shape to the show class
+data Point = Point Float Float deriving (Show)
+data Shape = Circle Point Float | Rectangle Point Point deriving (Show)
+
+surface :: Shape -> Float
+surface (Circle r _) = pi * r ^ 2
+surface (Rectangle (Point x1 y1) (Point x2 y2)) =
+        (abs $ x2 - x1) * (abs $ y2 - y1)
+-- surface (Rectangle (Point 0 0) (Point 100 100))
+-- surface (Circle (Point 0 0) 24)
